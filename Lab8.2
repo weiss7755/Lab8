@@ -1,0 +1,54 @@
+using System;
+using System.IO;
+using System.Collections.Generic;
+
+class Program
+{
+    static void Main()
+    {
+        string filePath = "C:\\Users\\lenovo\\source\\repos\\Lab8\\Lab8\\f.txt"; 
+        List<double> numbers = new List<double>();
+
+        try
+        {
+            // Зчитування чисел з файлу
+            foreach (string line in File.ReadLines(filePath))
+            {
+                if (double.TryParse(line, out double num))
+                    numbers.Add(num);
+            }
+
+            if (numbers.Count == 0)
+            {
+                Console.WriteLine("Файл не містить чисел.");
+                return;
+            }
+
+            double sum = 0;
+            double product = 1;
+            double sumOfSquares = 0;
+
+            foreach (double num in numbers)
+            {
+                sum += num;
+                product *= num;
+                sumOfSquares += num * num;
+            }
+
+            double absSum = Math.Abs(sum);
+            double squareProduct = product * product;
+            double lastComponent = numbers[numbers.Count - 1];
+
+            // Вивід результатів
+            Console.WriteLine("1) Сума: " + sum);
+            Console.WriteLine("2) Добуток: " + product);
+            Console.WriteLine("3) Сума квадратів: " + sumOfSquares);
+            Console.WriteLine("4) |Сума| = " + absSum + ", Квадрат добутку = " + squareProduct);
+            Console.WriteLine("5) Останній елемент: " + lastComponent);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Помилка: " + ex.Message);
+        }
+    }
+}
