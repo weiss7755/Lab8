@@ -1,0 +1,88 @@
+using System;
+using System.IO;
+
+class Program
+{
+    static void Main()
+    {
+        string groupNumber = "KNms1-B24"; 
+        string surname = "Bilyk";     
+
+        string basePath = @"D:\OOP_lab08";
+        string groupPath = Path.Combine(basePath, groupNumber);
+        string surnamePath = Path.Combine(basePath, surname);
+
+        string sourcesPath = Path.Combine(basePath, "Sources");
+        string reportsPath = Path.Combine(basePath, "Reports");
+        string textsPath = Path.Combine(basePath, "Texts");
+
+        try
+        {
+            // Створення каталогу OOP_lab08
+            Directory.CreateDirectory(basePath);
+
+            // Створення підкаталогів
+            Directory.CreateDirectory(groupPath);
+            Directory.CreateDirectory(surnamePath);
+            Directory.CreateDirectory(sourcesPath);
+            Directory.CreateDirectory(reportsPath);
+            Directory.CreateDirectory(textsPath);
+
+            // Копіювання каталогів до каталогу прізвища
+            CopyDirectory(sourcesPath, Path.Combine(surnamePath, "Sources"));
+            CopyDirectory(reportsPath, Path.Combine(surnamePath, "Reports"));
+            CopyDirectory(textsPath, Path.Combine(surnamePath, "Texts"));
+
+            // Переміщення каталогу прізвища до каталогу групи
+            string newSurnamePath = Path.Combine(groupPath, surname);
+            if (Directory.Exists(newSurnamePath))
+            {
+                Directory.Delete(newSurnamePath, true);
+            }
+            Directory.Move(surnamePath, newSurnamePath);
+
+            // Створення текстового файлу з інформацією про каталог Texts
+            string infoFilePath = Path.Combine(textsPath, "dirinfo.txt");
+            using (StreamWriter writer = new StreamWriter(infoFilePath))
+            {
+                writer.WriteLine($"Каталог: {textsPath}");
+                writer.WriteLine("Список файлів:");
+                foreach (string file in Directory.GetFiles(textsPath))
+                {
+                    writer.WriteLine(file);
+                }
+
+                writer.WriteLine("\nСписок підкаталогів:");
+                foreach (string dir in Directory.GetDirectories(textsPath))
+                {
+                    writer.WriteLine(dir);
+                }
+            }
+
+            Console.WriteLine("Усі операції виконано успішно.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Помилка: " + ex.Message);
+        }
+    }
+
+    static void CopyDirectory(string sourceDir, string targetDir)
+    {
+        Directory.CreateDirectory(targetDir);
+
+        foreach (string file in Directory.GetFiles(sourceDir))
+        {
+            string fileName = Path.GetFileName(file);
+            string destFile = Path.Combine(targetDir, fileName);
+            File.Copy(file, destFile, true);
+        }
+
+        foreach (string dir in Directory.GetDirectories(sourceDir))
+        {
+            string dirName = Path.GetFileName(dir);
+            string destSubDir = Path.Combine(targetDir, dirName);
+            CopyDirectory(dir, destSubDir);
+        }
+    }
+}
